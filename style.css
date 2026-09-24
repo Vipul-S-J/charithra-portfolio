@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+:root{--paper:#f7f5ef;--ink:#181818;--muted:#6d6a63;--line:#d9d5ca;--accent:#b51e27;--max:1380px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:"DM Sans",Arial,sans-serif;font-weight:300}
+img{display:block;width:100%;height:auto}a{color:inherit;text-decoration:none}
+.site-header{position:fixed;z-index:10;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:22px 4vw;background:rgba(247,245,239,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(217,213,202,.7)}
+.brand{font-size:13px;letter-spacing:.16em;font-weight:500}.nav{display:flex;gap:30px;font-size:12px;letter-spacing:.1em;text-transform:uppercase}.menu-btn{display:none;border:0;background:transparent;font:inherit;letter-spacing:.1em}
+.hero{min-height:100vh;display:grid;grid-template-columns:.9fr 1.1fr;align-items:center;gap:6vw;max-width:var(--max);margin:auto;padding:120px 4vw 70px}
+.hero-copy{padding:4vw 0}.eyebrow,.section-label,.project-meta,.detail{text-transform:uppercase;letter-spacing:.12em;font-size:10px;line-height:1.6}.eyebrow{color:var(--muted);max-width:520px}
+.hero h1{margin:35px 0 25px;font-family:"Playfair Display",Georgia,serif;font-size:clamp(70px,10vw,160px);font-weight:400;line-height:.8;letter-spacing:-.05em}
+em{font-family:"Playfair Display",Georgia,serif;font-weight:400}.hero-text{max-width:440px;line-height:1.8;color:#46443f}
+.scroll-link{display:inline-block;margin-top:35px;padding-bottom:8px;border-bottom:1px solid var(--ink);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.hero-image{max-height:78vh;overflow:hidden}.hero-image img{height:100%;object-fit:cover}
+.intro,.work,.contact{max-width:var(--max);margin:auto;padding:120px 4vw}.intro{border-top:1px solid var(--line)}
+.intro-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:10vw;margin-top:45px}
+.intro h2,.section-head h2,.contact h2{font-size:clamp(38px,5vw,76px);line-height:1.02;font-weight:300;letter-spacing:-.04em;margin:0}
+.intro-grid p{line-height:1.85;color:#55514a}
+.section-head{margin-bottom:100px}.section-head h2{max-width:900px;margin-top:35px}
+.project{padding:90px 0 130px;border-top:1px solid var(--line)}.project-meta{display:flex;justify-content:space-between;color:var(--muted);margin-bottom:45px}
+.project-copy{max-width:720px;margin-bottom:60px}.project-copy h3{font-family:"Playfair Display",Georgia,serif;font-size:clamp(50px,7vw,100px);line-height:.95;font-weight:400;margin:0 0 25px;letter-spacing:-.04em}
+.project-copy p:not(.detail){max-width:600px;line-height:1.8;color:#55514a}.detail{color:var(--accent);margin-top:25px}
+.project-pages{display:grid;gap:18px}.project-pages.split{grid-template-columns:1fr 1fr}.project-pages img{background:#fff;transition:transform .45s ease}.project-pages img:hover{transform:scale(.992)}
+.contact{border-top:1px solid var(--line);padding-bottom:80px}.contact-row{display:flex;flex-wrap:wrap;gap:45px;margin-top:55px;font-size:14px;border-bottom:1px solid var(--line);padding-bottom:18px;width:fit-content}.contact-row a{border-bottom:1px solid var(--ink);padding-bottom:5px}
+footer{display:flex;justify-content:space-between;padding:25px 4vw;border-top:1px solid var(--line);font-size:9px;letter-spacing:.13em;color:var(--muted)}
+@media(max-width:800px){.nav{display:none}.menu-btn{display:block}.hero{grid-template-columns:1fr;padding-top:115px}.hero h1{font-size:clamp(70px,20vw,120px)}.hero-image{order:-1;max-height:62vh}.intro-grid{grid-template-columns:1fr;gap:30px}.project-pages.split{grid-template-columns:1fr}.intro,.work,.contact{padding-top:80px;padding-bottom:80px}.project{padding:65px 0 85px}.project-meta{margin-bottom:30px}footer{flex-direction:column;gap:8px}}
