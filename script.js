@@ -1,128 +1,183 @@
 ```js
 (() => {
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [
+    ...root.querySelectorAll(selector)
+  ];
 
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
 
-  // -----------------------------
-  // Page Loader
-  // -----------------------------
+  // ==========================================
+  // PAGE LOADER
+  // ==========================================
+
   const loader = $(".site-loader");
 
-  const hide = () => {
-    loader?.classList.add("is-hidden");
-  };
+  function hideLoader() {
+    if (loader) {
+      loader.classList.add("is-hidden");
+    }
+  }
 
-  addEventListener("load", () => {
-    setTimeout(hide, 450);
+  window.addEventListener("load", () => {
+    window.setTimeout(hideLoader, 450);
   });
 
-  setTimeout(hide, 1700);
+  window.setTimeout(hideLoader, 1700);
 
-  // -----------------------------
-  // Reveal Animations
-  // -----------------------------
-  const reveals = $$(".reveal, .image-reveal");
+  // ==========================================
+  // REVEAL ANIMATIONS
+  // ==========================================
 
-  if ("IntersectionObserver" in window && !reduce) {
-    const io = new IntersectionObserver(
+  const revealElements = $$(".reveal, .image-reveal");
+
+  if (
+    "IntersectionObserver" in window &&
+    !reduceMotion
+  ) {
+    const revealObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("in-view");
-            io.unobserve(entry.target);
+            revealObserver.unobserve(entry.target);
           }
         });
       },
       {
         threshold: 0.04,
-        rootMargin: "0px 0px -5%",
+        rootMargin: "0px 0px -5%"
       }
     );
 
-    reveals.forEach((el, i) => {
-      el.style.transitionDelay = `${Math.min((i % 5) * 70, 280)}ms`;
-      io.observe(el);
+    revealElements.forEach((element, index) => {
+      element.style.transitionDelay =
+        Math.min((index % 5) * 70, 280) + "ms";
+
+      revealObserver.observe(element);
     });
   } else {
-    reveals.forEach((el) => el.classList.add("in-view"));
+    revealElements.forEach((element) => {
+      element.classList.add("in-view");
+    });
   }
 
-  // -----------------------------
-  // Mobile Menu
-  // -----------------------------
+  // ==========================================
+  // MOBILE MENU
+  // ==========================================
+
   const menu = $(".menu-toggle");
   const nav = $(".nav");
 
-  menu?.addEventListener("click", () => {
-    const open = menu.classList.toggle("open");
+  if (menu) {
+    menu.addEventListener("click", () => {
+      const isOpen = menu.classList.toggle("open");
 
-    nav?.classList.toggle("open", open);
-    menu.setAttribute("aria-expanded", open);
-  });
+      if (nav) {
+        nav.classList.toggle("open", isOpen);
+      }
 
-  $$(".nav a").forEach((a) => {
-    a.addEventListener("click", () => {
-      menu?.classList.remove("open");
-      nav?.classList.remove("open");
+      menu.setAttribute(
+        "aria-expanded",
+        String(isOpen)
+      );
     });
-  });
-
-  // -----------------------------
-  // Scroll Progress
-  // -----------------------------
-  const bar = $(".progress-bar");
-
-  function progress() {
-    const max = document.documentElement.scrollHeight - innerHeight;
-
-    if (bar) {
-      bar.style.width =
-        (max > 0 ? (scrollY / max) * 100 : 0) + "%";
-    }
-
-    $(".back-top")?.classList.toggle("show", scrollY > 650);
   }
 
-  addEventListener("scroll", progress, {
-    passive: true,
-  });
+  $$(".nav a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (menu) {
+        menu.classList.remove("open");
+      }
 
-  progress();
-
-  // -----------------------------
-  // Back To Top
-  // -----------------------------
-  $(".back-top")?.addEventListener("click", () => {
-    scrollTo({
-      top: 0,
-      behavior: "smooth",
+      if (nav) {
+        nav.classList.remove("open");
+      }
     });
   });
 
-  // -----------------------------
-  // Active Navigation
-  // -----------------------------
-  const links = $$(".nav a");
+  // ==========================================
+  // SCROLL PROGRESS
+  // ==========================================
+
+  const progressBar = $(".progress-bar");
+
+  function updateProgress() {
+    const maxScroll =
+      document.documentElement.scrollHeight -
+      window.innerHeight;
+
+    if (progressBar) {
+      const percentage =
+        maxScroll > 0
+          ? (window.scrollY / maxScroll) * 100
+          : 0;
+
+      progressBar.style.width = percentage + "%";
+    }
+
+    const backTop = $(".back-top");
+
+    if (backTop) {
+      backTop.classList.toggle(
+        "show",
+        window.scrollY > 650
+      );
+    }
+  }
+
+  window.addEventListener(
+    "scroll",
+    updateProgress,
+    { passive: true }
+  );
+
+  updateProgress();
+
+  // ==========================================
+  // BACK TO TOP
+  // ==========================================
+
+  const backTop = $(".back-top");
+
+  if (backTop) {
+    backTop.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  }
+
+  // ==========================================
+  // ACTIVE NAVIGATION
+  // ==========================================
+
+  const navLinks = $$(".nav a");
   const sections = $$("main section[id]");
 
   if ("IntersectionObserver" in window) {
     const sectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            links.forEach((a) => {
-              a.classList.toggle(
-                "active",
-                a.getAttribute("href") === "#" + entry.target.id
-              );
-            });
+          if (!entry.isIntersecting) {
+            return;
           }
+
+          navLinks.forEach((link) => {
+            const href = link.getAttribute("href");
+
+            link.classList.toggle(
+              "active",
+              href === "#" + entry.target.id
+            );
+          });
         });
       },
       {
-        rootMargin: "-35% 0px -55%",
+        rootMargin: "-35% 0px -55%"
       }
     );
 
@@ -131,24 +186,28 @@
     });
   }
 
-  // -----------------------------
-  // Project Filters
-  // -----------------------------
-  $$(".filter-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      $$(".filter-btn").forEach((b) => {
-        b.classList.remove("active");
+  // ==========================================
+  // PROJECT FILTERS
+  // ==========================================
+
+  $$(".filter-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      $$(".filter-btn").forEach((btn) => {
+        btn.classList.remove("active");
       });
 
-      btn.classList.add("active");
+      button.classList.add("active");
 
-      const filter = btn.dataset.filter;
+      const filter = button.dataset.filter;
 
       $$(".project").forEach((project) => {
+        const shouldHide =
+          filter !== "all" &&
+          project.dataset.category !== filter;
+
         project.classList.toggle(
           "is-filtered",
-          filter !== "all" &&
-            project.dataset.category !== filter
+          shouldHide
         );
       });
 
@@ -156,246 +215,370 @@
     });
   });
 
-  // -----------------------------
-  // Lightbox Gallery
-  // -----------------------------
-  let gallery = [];
-  let index = 0;
+  // ==========================================
+  // LIGHTBOX GALLERY
+  // ==========================================
 
-  const box = $(".lightbox");
-  const boxImg = $(".lightbox img");
-  const cap = $(".lightbox figcaption");
+  let gallery = [];
+  let galleryIndex = 0;
+
+  const lightbox = $(".lightbox");
+  const lightboxImage = $(".lightbox img");
+  const lightboxCaption = $(".lightbox figcaption");
 
   function refreshGallery() {
     gallery = $$(".project-pages img, .hero-image img").filter(
-      (img) => !img.closest(".project.is-filtered")
+      (image) => {
+        const hiddenProject =
+          image.closest(".project.is-filtered");
+
+        return !hiddenProject;
+      }
     );
 
-    gallery.forEach((img, i) => {
-      img.onclick = () => open(i);
+    gallery.forEach((image, index) => {
+      image.onclick = () => {
+        openLightbox(index);
+      };
     });
   }
 
-  function open(i) {
-    index = i;
+  function openLightbox(index) {
+    galleryIndex = index;
 
-    const img = gallery[index];
+    const image = gallery[galleryIndex];
 
-    if (!img || !box || !boxImg || !cap) {
-      return;
-    }
-
-    boxImg.src = img.currentSrc || img.src;
-    boxImg.alt = img.alt;
-    cap.textContent = img.alt;
-
-    box.classList.add("open");
-    box.setAttribute("aria-hidden", "false");
-
-    document.body.style.overflow = "hidden";
-  }
-
-  function close() {
-    if (!box) {
-      return;
-    }
-
-    box.classList.remove("open");
-    box.setAttribute("aria-hidden", "true");
-
-    document.body.style.overflow = "";
-  }
-
-  function move(direction) {
-    if (!gallery.length) {
-      return;
-    }
-
-    index = (index + direction + gallery.length) % gallery.length;
-
-    open(index);
-  }
-
-  refreshGallery();
-
-  $(".lightbox-close")?.addEventListener("click", close);
-
-  $(".lightbox-prev")?.addEventListener("click", () => {
-    move(-1);
-  });
-
-  $(".lightbox-next")?.addEventListener("click", () => {
-    move(1);
-  });
-
-  box?.addEventListener("click", (event) => {
-    if (event.target === box) {
-      close();
-    }
-  });
-
-  addEventListener("keydown", (event) => {
-    if (!box?.classList.contains("open")) {
-      return;
-    }
-
-    if (event.key === "Escape") {
-      close();
-    }
-
-    if (event.key === "ArrowRight") {
-      move(1);
-    }
-
-    if (event.key === "ArrowLeft") {
-      move(-1);
-    }
-  });
-
-  // -----------------------------
-  // Custom Cursor
-  // -----------------------------
-  const cursor = $(".cursor");
-
-  if (
-    cursor &&
-    matchMedia("(pointer:fine)").matches &&
-    !reduce
-  ) {
-    const text = cursor.querySelector("span");
-
-    let mx = innerWidth / 2;
-    let my = innerHeight / 2;
-
-    let cx = mx;
-    let cy = my;
-
-    addEventListener("mousemove", (event) => {
-      mx = event.clientX;
-      my = event.clientY;
-    });
-
-    (function tick() {
-      cx += (mx - cx) * 0.15;
-      cy += (my - cy) * 0.15;
-
-      cursor.style.left = cx + "px";
-      cursor.style.top = cy + "px";
-
-      requestAnimationFrame(tick);
-    })();
-
-    const bindCursor = () => {
-      $$("img, .scroll-link, .contact-row a").forEach((el) => {
-        el.addEventListener("mouseenter", () => {
-          if (text) {
-            text.textContent = el.matches("img")
-              ? "VIEW"
-              : "OPEN";
-          }
-
-          cursor.classList.add("visible");
-        });
-
-        el.addEventListener("mouseleave", () => {
-          cursor.classList.remove("visible");
-        });
-      });
-    };
-
-    bindCursor();
-  }
-
-  // -----------------------------
-  // Hero Image Parallax
-  // -----------------------------
-  const hero = $(".hero-image");
-
-  if (
-    hero &&
-    !reduce &&
-    matchMedia("(pointer:fine)").matches
-  ) {
-    const img = hero.querySelector("img");
-
-    if (img) {
-      hero.addEventListener("mousemove", (event) => {
-        const rect = hero.getBoundingClientRect();
-
-        const x =
-          (event.clientX - rect.left) / rect.width - 0.5;
-
-        const y =
-          (event.clientY - rect.top) / rect.height - 0.5;
-
-        img.style.transform =
-          `scale(1.035) translate(${x * 8}px, ${y * 8}px)`;
-      });
-
-      hero.addEventListener("mouseleave", () => {
-        img.style.transform = "";
-      });
-    }
-  }
-
-  // -----------------------------
-  // Project Image 3D Hover
-  // -----------------------------
-  if (
-    !reduce &&
-    matchMedia("(pointer:fine)").matches
-  ) {
-    $$(".project-pages img").forEach((img) => {
-      img.addEventListener("mousemove", (event) => {
-        const rect = img.getBoundingClientRect();
-
-        const x =
-          (event.clientX - rect.left) / rect.width - 0.5;
-
-        const y =
-          (event.clientY - rect.top) / rect.height - 0.5;
-
-        img.style.transform =
-          `perspective(900px) ` +
-          `rotateX(${y * -2}deg) ` +
-          `rotateY(${x * 2}deg) ` +
-          `scale(1.018)`;
-      });
-
-      img.addEventListener("mouseleave", () => {
-        img.style.transform = "";
-      });
-    });
-  }
-
-  // -----------------------------
-  // Magnetic Links
-  // -----------------------------
-  $$(".scroll-link, .contact-row a, .brand").forEach((el) => {
     if (
-      !matchMedia("(pointer:fine)").matches ||
-      reduce
+      !image ||
+      !lightbox ||
+      !lightboxImage ||
+      !lightboxCaption
     ) {
       return;
     }
 
-    el.addEventListener("mousemove", (event) => {
-      const rect = el.getBoundingClientRect();
+    lightboxImage.src =
+      image.currentSrc || image.src;
 
-      const x =
-        (event.clientX - rect.left - rect.width / 2) * 0.1;
+    lightboxImage.alt = image.alt;
 
-      const y =
-        (event.clientY - rect.top - rect.height / 2) * 0.1;
+    lightboxCaption.textContent = image.alt;
 
-      el.style.transform =
-        `translate(${x}px, ${y}px)`;
+    lightbox.classList.add("open");
+
+    lightbox.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    if (!lightbox) {
+      return;
+    }
+
+    lightbox.classList.remove("open");
+
+    lightbox.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+    document.body.style.overflow = "";
+  }
+
+  function moveGallery(direction) {
+    if (!gallery.length) {
+      return;
+    }
+
+    galleryIndex =
+      (galleryIndex +
+        direction +
+        gallery.length) %
+      gallery.length;
+
+    openLightbox(galleryIndex);
+  }
+
+  refreshGallery();
+
+  const lightboxClose = $(".lightbox-close");
+  const lightboxPrev = $(".lightbox-prev");
+  const lightboxNext = $(".lightbox-next");
+
+  if (lightboxClose) {
+    lightboxClose.addEventListener(
+      "click",
+      closeLightbox
+    );
+  }
+
+  if (lightboxPrev) {
+    lightboxPrev.addEventListener(
+      "click",
+      () => {
+        moveGallery(-1);
+      }
+    );
+  }
+
+  if (lightboxNext) {
+    lightboxNext.addEventListener(
+      "click",
+      () => {
+        moveGallery(1);
+      }
+    );
+  }
+
+  if (lightbox) {
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
     });
+  }
 
-    el.addEventListener("mouseleave", () => {
-      el.style.transform = "";
-    });
+  window.addEventListener("keydown", (event) => {
+    if (
+      !lightbox ||
+      !lightbox.classList.contains("open")
+    ) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      closeLightbox();
+    }
+
+    if (event.key === "ArrowRight") {
+      moveGallery(1);
+    }
+
+    if (event.key === "ArrowLeft") {
+      moveGallery(-1);
+    }
   });
+
+  // ==========================================
+  // CUSTOM CURSOR
+  // ==========================================
+
+  const cursor = $(".cursor");
+
+  if (
+    cursor &&
+    window.matchMedia("(pointer:fine)").matches &&
+    !reduceMotion
+  ) {
+    const cursorText = cursor.querySelector("span");
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    let cursorX = mouseX;
+    let cursorY = mouseY;
+
+    window.addEventListener("mousemove", (event) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+    });
+
+    function animateCursor() {
+      cursorX +=
+        (mouseX - cursorX) * 0.15;
+
+      cursorY +=
+        (mouseY - cursorY) * 0.15;
+
+      cursor.style.left =
+        cursorX + "px";
+
+      cursor.style.top =
+        cursorY + "px";
+
+      window.requestAnimationFrame(
+        animateCursor
+      );
+    }
+
+    animateCursor();
+
+    $$(
+      "img, .scroll-link, .contact-row a"
+    ).forEach((element) => {
+      element.addEventListener(
+        "mouseenter",
+        () => {
+          if (cursorText) {
+            cursorText.textContent =
+              element.matches("img")
+                ? "VIEW"
+                : "OPEN";
+          }
+
+          cursor.classList.add("visible");
+        }
+      );
+
+      element.addEventListener(
+        "mouseleave",
+        () => {
+          cursor.classList.remove(
+            "visible"
+          );
+        }
+      );
+    });
+  }
+
+  // ==========================================
+  // HERO IMAGE PARALLAX
+  // ==========================================
+
+  const hero = $(".hero-image");
+
+  if (
+    hero &&
+    !reduceMotion &&
+    window.matchMedia("(pointer:fine)").matches
+  ) {
+    const heroImage = hero.querySelector("img");
+
+    if (heroImage) {
+      hero.addEventListener(
+        "mousemove",
+        (event) => {
+          const rect =
+            hero.getBoundingClientRect();
+
+          const x =
+            (event.clientX - rect.left) /
+              rect.width -
+            0.5;
+
+          const y =
+            (event.clientY - rect.top) /
+              rect.height -
+            0.5;
+
+          heroImage.style.transform =
+            "scale(1.035) " +
+            "translate(" +
+            x * 8 +
+            "px, " +
+            y * 8 +
+            "px)";
+        }
+      );
+
+      hero.addEventListener(
+        "mouseleave",
+        () => {
+          heroImage.style.transform = "";
+        }
+      );
+    }
+  }
+
+  // ==========================================
+  // PROJECT IMAGE 3D HOVER
+  // ==========================================
+
+  if (
+    !reduceMotion &&
+    window.matchMedia("(pointer:fine)").matches
+  ) {
+    $$(".project-pages img").forEach(
+      (image) => {
+        image.addEventListener(
+          "mousemove",
+          (event) => {
+            const rect =
+              image.getBoundingClientRect();
+
+            const x =
+              (event.clientX - rect.left) /
+                rect.width -
+              0.5;
+
+            const y =
+              (event.clientY - rect.top) /
+                rect.height -
+              0.5;
+
+            image.style.transform =
+              "perspective(900px) " +
+              "rotateX(" +
+              y * -2 +
+              "deg) " +
+              "rotateY(" +
+              x * 2 +
+              "deg) " +
+              "scale(1.018)";
+          }
+        );
+
+        image.addEventListener(
+          "mouseleave",
+          () => {
+            image.style.transform = "";
+          }
+        );
+      }
+    );
+  }
+
+  // ==========================================
+  // MAGNETIC LINKS
+  // ==========================================
+
+  $$(".scroll-link, .contact-row a, .brand").forEach(
+    (element) => {
+      if (
+        !window.matchMedia("(pointer:fine)").matches ||
+        reduceMotion
+      ) {
+        return;
+      }
+
+      element.addEventListener(
+        "mousemove",
+        (event) => {
+          const rect =
+            element.getBoundingClientRect();
+
+          const x =
+            (event.clientX -
+              rect.left -
+              rect.width / 2) *
+            0.1;
+
+          const y =
+            (event.clientY -
+              rect.top -
+              rect.height / 2) *
+            0.1;
+
+          element.style.transform =
+            "translate(" +
+            x +
+            "px, " +
+            y +
+            "px)";
+        }
+      );
+
+      element.addEventListener(
+        "mouseleave",
+        () => {
+          element.style.transform = "";
+        }
+      );
+    }
+  );
 })();
 ```
-
