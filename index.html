@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet"></head>
 <body>
+<div class="progress-bar" aria-hidden="true"></div>
 <div class="site-loader" aria-hidden="true"><div class="loader-name">CHARITHRA JAIN</div><div class="loader-line"><span></span></div></div><div class="cursor" aria-hidden="true"><span>VIEW</span></div>
   <header class="site-header">
     <a class="brand" href="#top">CHARITHRA JAIN</a>
@@ -48,12 +49,13 @@
     </section>
 
     <section id="work" class="work">
+      <div class="work-controls" aria-label="Project navigation"><button class="filter-btn active" data-filter="all">All</button><button class="filter-btn" data-filter="resort">Resort Wear</button><button class="filter-btn" data-filter="textile">Textile</button><button class="filter-btn" data-filter="styling">Styling</button></div>
       <div class="section-head">
         <p class="section-label reveal">02 / SELECTED WORK</p>
         <h2>Projects that <em>move</em> between memory and material.</h2>
       </div>
 
-      <article class="project project-large">
+      <article class="project project-large" data-category="resort">
         <div class="project-meta reveal"><span>01</span><span>RESORT WEAR · 2025</span></div>
         <div class="project-copy">
           <h3>Musafir</h3>
@@ -66,7 +68,7 @@
         </div>
       </article>
 
-      <article class="project">
+      <article class="project" data-category="textile">
         <div class="project-meta reveal"><span>02</span><span>HAND FLAT KNITTING</span></div>
         <div class="project-copy">
           <h3>Twenty One</h3>
@@ -79,7 +81,7 @@
         </div>
       </article>
 
-      <article class="project">
+      <article class="project" data-category="styling">
         <div class="project-meta reveal"><span>03</span><span>STYLING PROJECT</span></div>
         <div class="project-copy">
           <h3>Neither / Nor</h3>
@@ -92,7 +94,7 @@
         </div>
       </article>
 
-      <article class="project project-large">
+      <article class="project project-large" data-category="textile">
         <div class="project-meta reveal"><span>04</span><span>EMBROIDERY PROJECT</span></div>
         <div class="project-copy">
           <h3>Malgudi Days</h3>
@@ -105,7 +107,7 @@
         </div>
       </article>
 
-      <article class="project">
+      <article class="project" data-category="textile">
         <div class="project-meta reveal"><span>05</span><span>DRAPING PROJECT</span></div>
         <div class="project-copy">
           <h3>Hollywood Siren</h3>
@@ -118,7 +120,7 @@
         </div>
       </article>
 
-      <article class="project project-large">
+      <article class="project project-large" data-category="textile">
         <div class="project-meta reveal"><span>06</span><span>PRINT DESIGN · FRUITOPIA</span></div>
         <div class="project-copy">
           <h3>Stained</h3>
@@ -143,6 +145,7 @@
     </section>
   </main>
 
+  <div class="lightbox" aria-hidden="true"><button class="lightbox-close" aria-label="Close image">×</button><button class="lightbox-prev" aria-label="Previous image">‹</button><figure><img src="" alt=""><figcaption></figcaption></figure><button class="lightbox-next" aria-label="Next image">›</button></div>
   <footer>
     <span>CHARITHRA JAIN</span>
     <span>PORTFOLIO · 2025</span>
