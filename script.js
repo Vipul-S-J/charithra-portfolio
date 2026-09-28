@@ -1,15 +1,66 @@
 (() => {
-  const body=document.body, loader=document.querySelector('.loader'), count=document.querySelector('.loader-count');
-  let n=0; const tick=setInterval(()=>{n+=4;if(n>100)n=100;if(count)count.textContent=String(n).padStart(2,'0');if(n===100){clearInterval(tick);setTimeout(()=>{loader.classList.add('hide');body.classList.remove('is-loading')},350)}},22);
-  const menu=document.querySelector('.menu-overlay'), trigger=document.querySelector('.menu-trigger');
-  const setMenu=open=>{menu.classList.toggle('open',open);menu.setAttribute('aria-hidden',String(!open));trigger.setAttribute('aria-expanded',String(open));document.body.classList.toggle('is-loading',open)};
-  trigger.addEventListener('click',()=>setMenu(!menu.classList.contains('open')));
-  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
-  const cursor=document.querySelector('.cursor');
-  if(cursor && matchMedia('(pointer:fine)').matches){document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursor.classList.add('active')});document.querySelectorAll('a,button,.project-images img').forEach(el=>{el.addEventListener('mouseenter',()=>cursor.classList.add('big'));el.addEventListener('mouseleave',()=>cursor.classList.remove('big'))})}
-  const items=document.querySelectorAll('.reveal');
-  const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.12});items.forEach(x=>io.observe(x));
-  const hero=document.querySelector('.hero-image');
-  window.addEventListener('scroll',()=>{if(hero && !matchMedia('(prefers-reduced-motion: reduce)').matches){const y=Math.min(window.scrollY*.10,70);hero.style.transform=`translateY(${y}px)`}}, {passive:true});
-  document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const el=document.querySelector(a.getAttribute('href'));if(!el)return;e.preventDefault();el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}));
+  const body = document.body;
+  const loader = document.querySelector('.intro-loader');
+  const counter = document.querySelector('#loaderCount');
+  const line = document.querySelector('.loader-line i');
+  const menuBtn = document.querySelector('.menu-btn');
+  const menuPanel = document.querySelector('.menu-panel');
+  const cursor = document.querySelector('.cursor');
+  const preview = document.querySelector('.project-preview');
+  const previewImg = preview?.querySelector('img');
+  const rows = document.querySelectorAll('.project-row');
+
+  body.classList.add('is-loading');
+  let n = 0;
+  const countTimer = setInterval(() => {
+    n += Math.ceil((100 - n) / 8);
+    if (n >= 100) { n = 100; clearInterval(countTimer); }
+    if (counter) counter.textContent = String(n).padStart(2, '0');
+    if (line) line.style.width = `${n}%`;
+  }, 22);
+
+  window.setTimeout(() => {
+    loader?.classList.add('done');
+    body.classList.remove('is-loading');
+  }, 1850);
+
+  const toggleMenu = (force) => {
+    const open = typeof force === 'boolean' ? force : !menuPanel.classList.contains('open');
+    menuPanel.classList.toggle('open', open);
+    menuPanel.setAttribute('aria-hidden', String(!open));
+    menuBtn?.setAttribute('aria-expanded', String(open));
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  };
+
+  menuBtn?.addEventListener('click', () => toggleMenu());
+  menuPanel?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleMenu(false); });
+
+  rows.forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      const src = row.dataset.image;
+      if (previewImg && src) previewImg.src = src;
+      preview?.classList.add('show');
+    });
+    row.addEventListener('mouseleave', () => preview?.classList.remove('show'));
+  });
+
+  if (cursor && matchMedia('(pointer:fine)').matches) {
+    window.addEventListener('pointermove', e => {
+      cursor.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 180, fill: 'forwards' });
+    });
+    document.querySelectorAll('a,button,.project-row').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
+    });
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 })();

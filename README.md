@@ -1,15 +1,12 @@
-# Charithra Jain Portfolio Website
+# Charithra Jain Portfolio
 
-A responsive static portfolio website built from the supplied Charithra Jain portfolio PDF.
+Dark red / black portfolio redesign inspired by the motion-led, editorial direction of huyml.co.
 
-## Files
-- `index.html` — website
-- `style.css` — responsive design
-- `script.js` — mobile menu
-- `assets/` — portfolio page images extracted from the supplied PDF
-
-## Run locally
-Open `index.html` in a browser, or run `python3 -m http.server 8000` and open `http://localhost:8000`.
+## Important
+- Uses only the original portfolio images in `assets/`.
+- No generated or replacement portfolio images are included.
+- The first-load sequence is implemented with CSS/JavaScript.
+- The menu, project hover previews, smooth scrolling, and responsive layout are included.
 
 ## GitHub Pages
-Create a GitHub repository, upload these files, then go to **Settings → Pages** and select the branch/root folder. The site can be hosted as a normal static GitHub Pages site.
+Replace the contents of the repository with these files while keeping the `assets/` folder. Then commit and push.
